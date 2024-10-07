@@ -4,7 +4,7 @@
 ## 🧑‍💻 Meet the team
 ### **[Jalaya](https://github.com/)**
 ### **[Kaleb](https://github.com/KalebJ683/)**
-### **[Karlena](https://github.com/)**
+### **[Karlena](https://github.com/yellowpretzel)**
 ### **[O'neil](https://github.com/)**
 ### **[Silas](https://github.com/SilasVM)**
 ### **Advisor: [Dr. Nwosu](http://github.com)**
