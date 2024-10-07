@@ -2,7 +2,7 @@
 *A Norfolk State University Classroom project*
 
 ## 🧑‍💻 Meet the team
-### **[Jalaya](https://github.com/)**
+### **[Jalaya](https://github.com/Faithmonae14)**
 ### **[Kaleb](https://github.com/KalebJ683/)**
 ### **[Karlena](https://github.com/yellowpretzel)**
 ### **[O'Neil](https://github.com/Owills15)**
