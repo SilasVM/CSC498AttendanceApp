@@ -3,7 +3,7 @@
 
 ## 🧑‍💻 Meet the team
 ### **[Jalaya](https://github.com/)**
-### **[Kaleb](https://github.com/)**
+### **[Kaleb](https://github.com/KalebJ683/)**
 ### **[Karlena](https://github.com/)**
 ### **[O'neil](https://github.com/)**
 ### **[Silas](https://github.com/SilasVM)**
