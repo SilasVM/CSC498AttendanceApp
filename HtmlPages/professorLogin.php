@@ -161,7 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             <img src="/Images/nsuLogo4.png" alt="NSU Logo">
             <h2>Sign In</h2>
             <p>Enter your login information below</p>
-            <form action="/HtmlPages/coursesPage.html" method="POST">
+            <form action="/HtmlPages/studentLogin.html" method="POST">
                 <input type="text" placeholder="email" required>
                 <input type="password" placeholder="password" required>
                 <button type="submit" class="login-btn">Sign In</button>
