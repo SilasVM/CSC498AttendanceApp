@@ -5,11 +5,11 @@ include("connection.php");
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     // Get data from the form
     $email = $_POST['email'];
-    $password = $_POST['password'];
+    $name = $_POST['password'];
 
     // Sanitize the input data
     $email = stripcslashes($email);
-    $password = stripcslashes($password);
+    $name = stripcslashes($name);
 
     // Validate data
     function validate($data) {
@@ -20,9 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     }
 
     $email = validate($email);
-    $password = validate($password);
+    $name = validate($name);
 
-    if (!empty($email) && !empty($password)) {
+    if (!empty($email) && !empty($name)) {
         // SQL query to check if the email exists
         $sql = "SELECT * FROM passinfo WHERE email='$email' LIMIT 1";
         $result = mysqli_query($con, $sql);
