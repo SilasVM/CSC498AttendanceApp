@@ -1,55 +1,43 @@
 <?php
-session_start();
-include("connection.php");
+    session_start();
+    include("connection.php");
 
-if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    // Get data from the form
-    $email = $_POST['email'];
-    $name = $_POST['password'];
+    if($_SERVER['REQUEST_METHOD'] == "POST"){
+      
+        $email = $_POST['email'];
+        $name = $_POST['password'];
 
-    // Sanitize the input data
-    $email = stripcslashes($email);
-    $name = stripcslashes($name);
+        $email = stripcslashes($email);
+        $name = stripcslashes($name);
+    
+    if (isset($_POST['email']) && isset($_POST['password'])){
 
-    // Validate data
-    function validate($data) {
-        $data = trim($data);
-        $data = stripcslashes($data);
-        $data = htmlspecialchars($data);
-        return $data;
-    }
-
-    $email = validate($email);
-    $name = validate($name);
-
-    if (!empty($email) && !empty($name)) {
-        // SQL query to check if the email exists
-        $sql = "SELECT * FROM passinfo WHERE email='$email' LIMIT 1";
-        $result = mysqli_query($con, $sql);
-
-        if (mysqli_num_rows($result) > 0) {
-            // User exists, now check the name field (password)
-            $row = mysqli_fetch_assoc($result);
-            if ($password === $row['name']) { // Compare form password with 'name' in the database
-                // Set session variables for the logged-in user
-                $_SESSION['email'] = $row['email'];
-                $_SESSION['name'] = $row['name'];  // Assuming 'name' is a column in your table
-
-                // Redirect to the frontend/dashboard page after successful login
-                header("Location: Frontend.php"); // Adjust to your desired page
-                exit();
-            } else {
-                echo 'Invalid password. Please try again.';
-            }
-        } else {
-            echo 'Email not found. Please check your email or register.';
+        function validate($data){
+            $data = trim($data);
+            $data = stripcslashes($data);
+            $data = htmlspecialchars($data);
+            return $data;
         }
-    } else {
-        echo 'Please fill in all fields.';
-    }
+        $email = validate($_POST['email']);
+        $name = validate($_POST['password']);
 
-    // Close the database connection
+        if(!empty($email)){
+            $sql = "SELECT * FROM passinfo WHERE email='$email' AND password='$name'";
+            $result = mysqli_query($con, $sql);
+
+            if (mysqli_num_rows($result)){
+              header("Location: Frontend");
+            }else{
+                echo 'Invalid Information. Please Try another User-Password combination Or Make An Account.';
+            }
+        }
+
+    }
+    
+    mysqli_query($con, $sql);
+
     mysqli_close($con);
+
 }
 ?>
 <!DOCTYPE html>
