@@ -1,5 +1,5 @@
 <?php
-$host = "attendancedb.c9k8c68iecq2.us-east-2.rds.amazonaws.com";
+$host = "admin@attendancedb.c9k8c68iecq2.us-east-2.rds.amazonaws.com";
 $username = "admin";
 $password = "Spartan$2025!";
 $dbname = "attendancedb";
