@@ -5,10 +5,10 @@
     if($_SERVER['REQUEST_METHOD'] == "POST"){
       
         $email = $_POST['email'];
-        $name = $_POST['password'];
+        $password = $_POST['password'];
 
         $email = stripcslashes($email);
-        $name = stripcslashes($name);
+        $password = stripcslashes($password);
     
     if (isset($_POST['email']) && isset($_POST['password'])){
 
@@ -19,10 +19,10 @@
             return $data;
         }
         $email = validate($_POST['email']);
-        $name = validate($_POST['password']);
+        $password = validate($_POST['password']);
 
         if(!empty($email)){
-            $sql = "SELECT * FROM passinfo WHERE email='$email' AND password='$name'";
+            $sql = "SELECT * FROM professors WHERE email='$email' AND password='$password'";
             $result = mysqli_query($con, $sql);
 
             if (mysqli_num_rows($result)){
