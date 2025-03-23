@@ -150,7 +150,7 @@
             <img src="/Images/nsuLogo4.png" alt="NSU Logo">
             <h2>Sign In</h2>
             <p>Enter your login information below</p>
-            <form action="/HtmlPages/studentLogin.html" method="POST">
+            <form action="/HtmlPages/studentConfirmation.html" method="POST">
                 <input type="text" name = "email" placeholder="email" required>
                 <input type="password" name = "password" placeholder="password" required>
                 <button type="submit" class="login-btn">Sign In</button>
