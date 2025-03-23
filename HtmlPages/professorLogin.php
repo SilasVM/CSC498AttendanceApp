@@ -2,37 +2,38 @@
     session_start();
     include("connection.php");
 
-    if($_SERVER['REQUEST_METHOD'] == "POST"){
+    if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['email']) && isset($_POST['[password'])) {
       
-        $email = $_POST['email'];
-        $password = $_POST['password'];
+        function validate($data) {
+            $data = trim($data);
+            $data = stripslashes($data);
+            $data = htmlspecialchars($data);
+            return $data;
+        }
 
-        $email = stripcslashes($email);
-        $password = stripcslashes($password);
+        $email = validate($_POST['email']);
+        $password = validate($_POST['password']);
     
     if (isset($_POST['email']) && isset($_POST['password'])){
-
-        function validate($data){
-            $data = trim($data);
-            $data = stripcslashes($data);
-            $data = htmlspecialchars($data);
+;
             return $data;
         }
         $email = validate($_POST['email']);
         $password = validate($_POST['password']);
 
-        if(!empty($email)){
+        if (!empty($email) && !empty($password)) {
             $sql = "SELECT * FROM professors WHERE email='$email' AND password='$password'";
             $result = mysqli_query($con, $sql);
-
-            if (mysqli_num_rows($result)){
-              header("Location: Frontend");
-            }else{
+    
+            if (mysqli_num_rows($result) > 0) {
+                header("Location: Frontend");
+                exit(); // Prevent further script execution
+            } else {
                 echo 'Invalid Information. Please Try another User-Password combination Or Make An Account.';
             }
+        } else {
+            echo "Please fill in all fields.";
         }
-
-    }
     
     mysqli_query($con, $sql);
 
@@ -150,8 +151,8 @@
             <h2>Sign In</h2>
             <p>Enter your login information below</p>
             <form action="/HtmlPages/studentLogin.html" method="POST">
-                <input type="text" placeholder="email" required>
-                <input type="password" placeholder="password" required>
+                <input type="text" name = "email" placeholder="email" required>
+                <input type="password" name = "password" placeholder="password" required>
                 <button type="submit" class="login-btn">Sign In</button>
             </form>
         </div>
