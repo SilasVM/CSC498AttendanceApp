@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['email']) && isset($_PO
 
     if (!empty($email) && !empty($password)) {
         //Directs query to our chosen table to compare data
-        $stmt = $con->prepare("SELECT * FROM UserData.professors WHERE email = ? AND password = ?");
+        $stmt = $con->prepare("SELECT * FROM professors WHERE email = ? AND password = ?");
         if (!$stmt) {
             die("Prepare failed: " . $con->error);
         }
