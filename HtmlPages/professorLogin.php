@@ -1,46 +1,52 @@
 <?php
-    session_start();
-    include("connection.php");
+session_start();
+include("connection.php"); // Ensure connection.php correctly connects to UserData
 
-    if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['email']) && isset($_POST['[password'])) {
-      
-        function validate($data) {
-            $data = trim($data);
-            $data = stripslashes($data);
-            $data = htmlspecialchars($data);
-            return $data;
+if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['email']) && isset($_POST['password'])) {
+
+    function validate($data) {
+        return htmlspecialchars(stripslashes(trim($data)));
+    }
+
+    $email = validate($_POST['email']);
+    $password = validate($_POST['password']);
+
+    if (!empty($email) && !empty($password)) {
+        // ✅ Correcting SQL Query Syntax
+        $stmt = $con->prepare("SELECT * FROM UserData.professors WHERE email = ? AND password = ?");
+        if (!$stmt) {
+            die("Prepare failed: " . $con->error);
         }
 
-        $email = validate($_POST['email']);
-        $password = validate($_POST['password']);
-    
-    if (isset($_POST['email']) && isset($_POST['password'])){
-;
-            return $data;
+        // ✅ Ensure Both Variables Exist Before Binding
+        if (!$stmt->bind_param("ss", $email, $password)) {
+            die("Bind failed: " . $stmt->error);
         }
-        $email = validate($_POST['email']);
-        $password = validate($_POST['password']);
 
-        if (!empty($email) && !empty($password)) {
-            $sql = "SELECT * FROM professors WHERE email='$email' AND password='$password'";
-            $result = mysqli_query($con, $sql);
-    
-            if (mysqli_num_rows($result) > 0) {
-                header("Location: Frontend");
-                exit(); // Prevent further script execution
-            } else {
-                echo 'Invalid Information. Please Try another User-Password combination Or Make An Account.';
-            }
+        if (!$stmt->execute()) {
+            die("Execute failed: " . $stmt->error);
+        }
+
+        $result = $stmt->get_result();
+
+        if ($row = $result->fetch_assoc()) {
+            echo "User found! Logging in...<br>";
+            $_SESSION['user'] = $email;
+            header("Location: studentConfirmation.html");
+            exit();
         } else {
-            echo "Please fill in all fields.";
+            echo 'Invalid email or password. Please try again.<br>';
         }
-    
-    mysqli_query($con, $sql);
+
+        $stmt->close();
+    } else {
+        echo "Please fill in all fields.<br>";
+    }
 
     mysqli_close($con);
-
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -150,7 +156,7 @@
             <img src="/Images/nsuLogo4.png" alt="NSU Logo">
             <h2>Sign In</h2>
             <p>Enter your login information below</p>
-            <form action="/HtmlPages/studentConfirmation.html" method="POST">
+            <form action="professorLogin.php" method="POST">
                 <input type="text" name = "email" placeholder="email" required>
                 <input type="password" name = "password" placeholder="password" required>
                 <button type="submit" class="login-btn">Sign In</button>
