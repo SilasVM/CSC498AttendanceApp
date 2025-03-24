@@ -1,9 +1,12 @@
 <?php
 session_start();
-include("connection.php"); // Ensure connection.php correctly connects to UserData
+
+//Importing my connection php file
+include("connection.php");
 
 if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['email']) && isset($_POST['password'])) {
 
+    //Function used to simplify entered data for uniformity and then validate them
     function validate($data) {
         return htmlspecialchars(stripslashes(trim($data)));
     }
@@ -12,13 +15,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['email']) && isset($_PO
     $password = validate($_POST['password']);
 
     if (!empty($email) && !empty($password)) {
-        // ✅ Correcting SQL Query Syntax
+        //Directs query to our chosen table to compare data
         $stmt = $con->prepare("SELECT * FROM UserData.professors WHERE email = ? AND password = ?");
         if (!$stmt) {
             die("Prepare failed: " . $con->error);
         }
 
-        // ✅ Ensure Both Variables Exist Before Binding
         if (!$stmt->bind_param("ss", $email, $password)) {
             die("Bind failed: " . $stmt->error);
         }
