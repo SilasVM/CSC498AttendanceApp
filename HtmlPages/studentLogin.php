@@ -8,6 +8,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['studentID']) && isset(
         return htmlspecialchars(stripslashes(trim($data)));
     }
 
+    $attendanceDate = date('Y-m-d');
+    $checkInTime = date("h:i:a");
     $studentID = validate($_POST['studentID']);
     $classID = validate($_POST['classID']);
 
@@ -49,8 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['studentID']) && isset(
         $stmt->close();
 
         // ✅ Step 4: Insert into `attendance`
-        $stmt = $con->prepare("INSERT INTO attendance (studentID, classID) VALUES (?, ?)");
-        $stmt->bind_param("ss", $studentID, $classID);
+        $stmt = $con->prepare("INSERT INTO attendance (studentID, classID, attendanceDate, checkInTime) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $studentID, $classID, $attendanceDate, $checkInTime);
 
         if ($stmt->execute()) {
             echo "<script>console.log('Attendance recorded successfully.');</script>";
