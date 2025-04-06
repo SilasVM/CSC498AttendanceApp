@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['email']) && isset($_PO
         if ($row = $result->fetch_assoc()) {
             echo "User found! Logging in...<br>";
             $_SESSION['user'] = $email;
-            header("Location: coursesPage.html");
+            header("Location: coursePage.php");
             exit();
         } else {
             echo 'Invalid email or password. Please try again.<br>';
