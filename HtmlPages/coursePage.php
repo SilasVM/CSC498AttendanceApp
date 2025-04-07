@@ -189,12 +189,16 @@ $con->close();
                 const card = document.createElement("div");
                 card.classList.add("course-card");
                 card.innerHTML = `
-                    <div class="course-image"></div>
-                    <h3>${c.ClassName}</h3>
-                    <p>Class ID: ${c.ClassID}</p>
+                    <form method="POST" action="setClass.php" class="class-form">
+                        <input type="hidden" name="chosenClass" value="${c.ClassID}">
+                        <div class="course-image"></div>
+                        <h3>${c.ClassName}</h3>
+                        <p>Class ID: ${c.ClassID}</p>
+                    </form>
                 `;
+
                 card.addEventListener("click", () => {
-                    alert(`You selected ${c.ClassName} - ${c.ClassID}`);
+                    card.querySelector("form").submit();
                 });
                 container.appendChild(card);
             });
