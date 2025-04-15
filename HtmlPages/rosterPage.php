@@ -5,7 +5,7 @@ include("connection.php");
 $classID = $_SESSION['chosenClass'];
 $students = [];
 
-$stmt = $con->prepare("SELECT StudentID, ClassID, 'Status' FROM attendance WHERE ClassID = ?");
+$stmt = $con->prepare("SELECT StudentID, StudentName, Status FROM attendance WHERE ClassID = ?");
 //$stmt = $con->prepare("SELECT Name FROM professors WHERE ProfessorEmail = ?");
 $stmt->bind_param("s", $classID);
 $stmt->execute();
@@ -14,10 +14,9 @@ $result = $stmt->get_result();
 while ($row = $result->fetch_assoc()) {
     $students[] = $row;
 }
-
 $stmt->close();
 
-
+$con->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -185,17 +184,9 @@ $stmt->close();
     <div class="container">
         <div id="studentList"></div>
     </div>
-
     <script>
-        const students = [
-          { id: 1, name: "Karlena Hardaway", status: "Present" },
-          { id: 2, name: "Kaleb Jarmen", status: "Tardy" },
-          { id: 3, name: "O'Neil Williams", status: "Absent" },
-          { id: 4, name: "Victor Morgan", status: "Present" },
-          { id: 5, name: "Jalaya Allen", status: "Tardy" }
-        ];
-    
-        const studentList = document.getElementById("studentList");
+        //Fills students with attendance array from php
+        const students = <?php echo json_encode($students); ?>;
     
         function renderList() {
           studentList.innerHTML = '';
@@ -205,7 +196,7 @@ $stmt->close();
     
             const name = document.createElement("div");
             name.className = "student-name";
-            name.textContent = student.name;
+            name.textContent = student.StudentName;
     
             const statusContainer = document.createElement("div");
     
@@ -216,7 +207,7 @@ $stmt->close();
               statusSpan.textContent = status;
               statusSpan.classList.add("status");
     
-              if (student.status === status) {
+              if (student.Status === status) {
                 statusSpan.classList.add(status.toLowerCase());
               } else {
                 statusSpan.classList.add("inactive");

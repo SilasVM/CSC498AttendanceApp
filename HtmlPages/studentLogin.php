@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 include("connection.php");
 
 if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['studentID']) && isset($_POST['classID'])) {
@@ -9,12 +10,13 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['studentID']) && isset(
     }
 
     $attendanceDate = date('Y-m-d');
-    $checkInTime = date("h:i:a");
+    $checkInTime = date("h:ia");
     $studentID = validate($_POST['studentID']);
     $classID = validate($_POST['classID']);
+    $classTimes = [];
 
     if (!empty($studentID) && !empty($classID)) {
-        // ✅ Step 1: Check if student exists
+        // Ensures a valid ID is entered
         $stmt = $con->prepare("SELECT * FROM students WHERE StudentID = ?");
         $stmt->bind_param("s", $studentID);
         $stmt->execute();
@@ -26,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['studentID']) && isset(
         }
         $stmt->close();
 
-        // ✅ Step 2: Check if class exists
+        // Ensure the class code is in our DB
         $stmt = $con->prepare("SELECT * FROM classes WHERE ClassID = ?");
         $stmt->bind_param("s", $classID);
         $stmt->execute();
@@ -38,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['studentID']) && isset(
         }
         $stmt->close();
 
-        // ✅ Step 3: Check if student is registered in the class
+        // Ensure the student is regsitered for the class they've entered
         $stmt = $con->prepare("SELECT * FROM enrollment WHERE StudentID = ? AND ClassID = ?");
         $stmt->bind_param("ss", $studentID, $classID);
         $stmt->execute();
@@ -50,19 +52,45 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['studentID']) && isset(
         }
         $stmt->close();
 
-        // ✅ Step 4: Insert into `attendance`
-        $stmt = $con->prepare("INSERT INTO attendance (studentID, classID, attendanceDate, checkInTime) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssss", $studentID, $classID, $attendanceDate, $checkInTime);
+        // Pulls Times for the class from the database
+        $stmt = $con->prepare("SELECT StartTime, EndTime, GracePeriod FROM classes WHERE ClassID = ?");
+        $stmt->bind_param("s", $classID);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-        if ($stmt->execute()) {
-            echo "<script>console.log('Attendance recorded successfully.');</script>";
-            $_SESSION['user'] = $studentID;
-            header("Location: studentConfirmation.html");
-            exit();
+        while ($row = $result->fetch_assoc()) {
+            $classStart = $row['StartTime'];
+            $classEnd = $row['EndTime'];
+            $gracePeriod = $row['GracePeriod'];       
+            }
+        $stmt->close();
+
+        $checkInTimestamp = strtotime($checkInTime);
+        $classStartTime = strtotime($classStart);
+        $classEndTime = strtotime($classEnd);
+        $graceEndTime = strtotime("+$gracePeriod minutes", $classStartTime);
+
+        if ($checkInTimestamp <= $graceEndTime && $checkInTimestamp >= $classStart) {
+            $Status = "Present";
+        } elseif ($checkInTimestamp > $graceEndTime && $checkInTimestamp <= $classEndTime) {
+            $Status = "Tardy";
         } else {
-            echo "<script>alert('Error: Attendance recording failed.'); window.location.href = window.location.href;</script>";
+            $Status = "Absent";
         }
 
+        // Inserts student and check-in time into attendance table.
+        $stmt = $con->prepare("INSERT INTO attendance (studentID, classID, attendanceDate, checkInTime, Status) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssss", $studentID, $classID, $attendanceDate, $checkInTime, $Status);
+
+        if ($stmt->execute()) {
+            $_SESSION['user'] = $studentID;
+            $_SESSION['classID'] = $classID;
+            $_SESSION['checkinTime'] = $checkInTime;
+            $_SESSION['checkinDate'] = date("m/d/Y");
+            header("Location: studentConfirmation.php");
+            exit();
+        }
+        
         $stmt->close();
     } else {
         echo "<script>alert('Please fill in all fields.'); window.location.href = window.location.href;</script>";
