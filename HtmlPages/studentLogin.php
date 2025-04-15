@@ -3,9 +3,9 @@ session_start();
 
 include("connection.php");
 
-if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['studentID']) && isset($_POST['classID'])) {
+if($_SERVER['REQUEST_METHOD']=="POST" && isset($_POST['studentID']) && isset($_POST['classID'])){
 
-    function validate($data) {
+    function validate($data){
         return htmlspecialchars(stripslashes(trim($data)));
     }
 
@@ -15,14 +15,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['studentID']) && isset(
     $classID = validate($_POST['classID']);
     $classTimes = [];
 
-    if (!empty($studentID) && !empty($classID)) {
+    if(!empty($studentID) && !empty($classID)){
         // Ensures a valid ID is entered
         $stmt = $con->prepare("SELECT * FROM students WHERE StudentID = ?");
         $stmt->bind_param("s", $studentID);
         $stmt->execute();
         $result = $stmt->get_result();
 
-        if (!$result->fetch_assoc()) {
+        if(!$result->fetch_assoc()){
             echo "<script>alert('Error: Student is not registered in the system.'); window.location.href = window.location.href;</script>";
             exit();
         }
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['studentID']) && isset(
         $stmt->execute();
         $result = $stmt->get_result();
 
-        if (!$result->fetch_assoc()) {
+        if(!$result->fetch_assoc()){
             echo "<script>alert('Error: The specified class does not exist.'); window.location.href = window.location.href;</script>";
             exit();
         }
@@ -46,19 +46,19 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['studentID']) && isset(
         $stmt->execute();
         $result = $stmt->get_result();
 
-        if (!$result->fetch_assoc()) {
+        if(!$result->fetch_assoc()){
             echo "<script>alert('Error: Student is not registered in this class. Attendance not recorded.'); window.location.href = window.location.href;</script>";
             exit();
         }
         $stmt->close();
 
-        // Pulls Times for the class from the database
+        // Pulls Times for the class from the database and stores them for use when creating status
         $stmt = $con->prepare("SELECT StartTime, EndTime, GracePeriod FROM classes WHERE ClassID = ?");
         $stmt->bind_param("s", $classID);
         $stmt->execute();
         $result = $stmt->get_result();
 
-        while ($row = $result->fetch_assoc()) {
+        while($row = $result->fetch_assoc()){
             $classStart = $row['StartTime'];
             $classEnd = $row['EndTime'];
             $gracePeriod = $row['GracePeriod'];       
@@ -70,11 +70,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['studentID']) && isset(
         $classEndTime = strtotime($classEnd);
         $graceEndTime = strtotime("+$gracePeriod minutes", $classStartTime);
 
-        if ($checkInTimestamp <= $graceEndTime && $checkInTimestamp >= $classStart) {
+        if($checkInTimestamp <= $graceEndTime && $checkInTimestamp >= $classStart){
             $Status = "Present";
-        } elseif ($checkInTimestamp > $graceEndTime && $checkInTimestamp <= $classEndTime) {
+        }else if($checkInTimestamp > $graceEndTime && $checkInTimestamp <= $classEndTime){
             $Status = "Tardy";
-        } else {
+        }else{
             $Status = "Absent";
         }
 
@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['studentID']) && isset(
         $stmt = $con->prepare("INSERT INTO attendance (studentID, classID, attendanceDate, checkInTime, Status) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("sssss", $studentID, $classID, $attendanceDate, $checkInTime, $Status);
 
-        if ($stmt->execute()) {
+        if($stmt->execute()){
             $_SESSION['user'] = $studentID;
             $_SESSION['classID'] = $classID;
             $_SESSION['checkinTime'] = $checkInTime;
@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['studentID']) && isset(
         }
         
         $stmt->close();
-    } else {
+    }else{
         echo "<script>alert('Please fill in all fields.'); window.location.href = window.location.href;</script>";
     }
 

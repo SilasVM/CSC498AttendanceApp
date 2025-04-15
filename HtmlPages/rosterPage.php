@@ -1,22 +1,23 @@
 <?php
-session_start();
-include("connection.php");
+    session_start();
+    include("connection.php");
 
-$classID = $_SESSION['chosenClass'];
-$students = [];
+    $classID = $_SESSION['chosenClass'];
+    $students = [];
+    $dates = [];
 
-$stmt = $con->prepare("SELECT StudentID, StudentName, Status FROM attendance WHERE ClassID = ?");
-//$stmt = $con->prepare("SELECT Name FROM professors WHERE ProfessorEmail = ?");
-$stmt->bind_param("s", $classID);
-$stmt->execute();
-$result = $stmt->get_result();
+    $stmt = $con->prepare("SELECT StudentID, StudentName, Status, AttendanceDate  FROM attendance WHERE ClassID = ?");
+    //$stmt = $con->prepare("SELECT Name FROM professors WHERE ProfessorEmail = ?");
+    $stmt->bind_param("s", $classID);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-while ($row = $result->fetch_assoc()) {
-    $students[] = $row;
-}
-$stmt->close();
+    while($row = $result->fetch_assoc()){
+        $students[] = $row;
+    }
+    $stmt->close();
 
-$con->close();
+    $con->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -274,7 +275,7 @@ $con->close();
     </div>
 
     <div class="title-container">
-        <form action="coursesPage.php" method="POST">
+        <form action="coursePage.php" method="POST">
             <button type="submit" class="back-btn">Back to Courses</button>
         </form>
         <h1>Course Attendance</h1>
@@ -289,7 +290,7 @@ $con->close();
         <div class="dropdown-container">
             <select id="dateSelect">
                 <option>Select Date</option>
-                <option>04/08/2025</option>
+                <option>04/15/2025</option>
                 <option>04/07/2025</option>
                 <option>04/06/2025</option>
             </select>

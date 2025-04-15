@@ -4,7 +4,7 @@ session_start();
 //Importing my connection php file
 include("connection.php");
 
-if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['email']) && isset($_POST['password'])) {
+if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['email']) && isset($_POST['password'])){
 
     //Function used to simplify entered data for uniformity and then validate them
     function validate($data) {
@@ -14,29 +14,29 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['email']) && isset($_PO
     $email = validate($_POST['email']);
     $password = validate($_POST['password']);
 
-    if (!empty($email) && !empty($password)) {
+    if(!empty($email) && !empty($password)){
         //Directs query to our chosen table to compare data
         $stmt = $con->prepare("SELECT * FROM professors WHERE email = ? AND password = ?");
         if (!$stmt) {
             die("Prepare failed: " . $con->error);
         }
 
-        if (!$stmt->bind_param("ss", $email, $password)) {
+        if(!$stmt->bind_param("ss", $email, $password)){
             die("Bind failed: " . $stmt->error);
         }
 
-        if (!$stmt->execute()) {
+        if(!$stmt->execute()){
             die("Execute failed: " . $stmt->error);
         }
 
         $result = $stmt->get_result();
 
-        if ($row = $result->fetch_assoc()) {
+        if($row = $result->fetch_assoc()){
             echo "User found! Logging in...<br>";
             $_SESSION['user'] = $email;
             header("Location: coursePage.php");
             exit();
-        } else {
+        }else{
             echo 'Invalid email or password. Please try again.<br>';
         }
 

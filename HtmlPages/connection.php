@@ -1,6 +1,9 @@
 <?php
+
+//Set timezone
 date_default_timezone_set('America/New_York');
 
+//Database Info to be used for connection
 $host = "attendancedb.c9k8c68iecq2.us-east-2.rds.amazonaws.com";
 $username = "admin";
 $password = "Spartan$2025!";

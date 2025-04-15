@@ -2,7 +2,7 @@
 session_start();
 include("connection.php");
 
-if (!isset($_SESSION['user'])) {
+if(!isset($_SESSION['user'])){
     header("Location: professorLogin.php");
     exit();
 }
@@ -17,7 +17,7 @@ $stmt->bind_param("s", $professorEmail);
 $stmt->execute();
 $result = $stmt->get_result();
 
-while ($row = $result->fetch_assoc()) {
+while($row = $result->fetch_assoc()){
     $classes[] = $row;
 }
 
@@ -28,7 +28,7 @@ $stmt2->bind_param("s", $professorEmail);
 $stmt2->execute();
 $result = $stmt2->get_result();
 
-while ($row = $result->fetch_assoc()) {
+while($row = $result->fetch_assoc()){
     $professorName = $row['Name'];
 }
 

@@ -14,7 +14,7 @@ $stmt->bind_param("s", $studentID);
 $stmt->execute();
 $result = $stmt->get_result();
 
-while ($row = $result->fetch_assoc()) {
+while ($row = $result->fetch_assoc()){
     $studentName = $row['Name'];
 }
 
