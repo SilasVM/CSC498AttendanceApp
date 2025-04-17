@@ -268,7 +268,7 @@
 <body>
     <div class="header-container"> 
         <img src="../Images/nsuLogoWhite.png" alt="NSU Logo">
-        <form action="professorLogin.html" method="POST">
+        <form action="logout.php" method="POST">
             <button type="submit" class="signout-btn">Sign Out</button>
         </form>
     </div>
