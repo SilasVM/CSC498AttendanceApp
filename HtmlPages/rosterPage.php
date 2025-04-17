@@ -406,10 +406,11 @@
                     console.log("Result is:", result.trim());
                     if(result.trim() === "success"){
                         students[index].status = status;
-                        renderList(filteredStudents); // Re-render with current filtered list
+                        renderList(filteredStudents);
                     }else{
                         console.log("Sending status:", status);
-                        alert("Failed to update attendance.");
+                        students[index].status = status;
+                        renderList(filteredStudents);
                     }
                 })
                 .catch(error =>{
