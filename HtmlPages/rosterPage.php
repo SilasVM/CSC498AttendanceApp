@@ -14,6 +14,9 @@
 
     while($row = $result->fetch_assoc()){
         $students[] = $row;
+        if(!in_array($row['AttendanceDate'], $dates)){
+            $dates[] = $row['AttendanceDate'];
+        }
     }
     $stmt->close();
 
@@ -201,17 +204,13 @@
             background-color: #d4edda;
             color: #155724;
         }
-        .tardy {
+        .late {
             background-color: #fff3cd;
             color: #856404;
         }
         .absent {
             background-color: #f8d7da;
             color: #721c24;
-        }
-        .excused {
-            background-color: #cce5ff;
-            color: #004085;
         }
         .inactive {
             background-color: #e2e3e5;
@@ -289,15 +288,12 @@
     <div class="options-container">
         <div class="dropdown-container">
             <select id="dateSelect">
-                <option>Select Date</option>
-                <option>04/15/2025</option>
-                <option>04/07/2025</option>
-                <option>04/06/2025</option>
+                <option value = "" disabled selected>Select Date</option>
             </select>
 
         </div>
         <div class="edit-options">
-            <button class="edit-button" onclick="addStudentPopup()" >Add Student</button>
+           <!-- <button class="edit-button" onclick="addStudentPopup()" >Add Student</button> -->
             <button class="edit-button" onclick="removeStudentPopup()">Remove Student</button>
         </div>
     </div>
@@ -306,7 +302,7 @@
         <div id="studentList"></div>
     </div>
 
-    <div id="addModal" class="modal">
+<!--   <div id="addModal" class="modal">
         <div class="modal-content">
             <h2>Add Student</h2>
             <h3>Please enter the students information:</h3>
@@ -315,33 +311,45 @@
             <input type="text" id="addStudentId" placeholder="Student ID">
             <button onclick="submitAddStudent()">Add Student</button>
         </div>
-    </div>
+    </div> -->
     <div id="removeModal" class="modal">
         <div class="modal-content">
             <h2>Remove Student</h2>
             <h3>Please enter the students information:</h3>
-            <input type="text" id="addFirstName" placeholder="First Name">
-            <input type="text" id="addLastName" placeholder="Last Name">
-            <input type="text" id="addStudentId" placeholder="Student ID">
+            <input type="text" id="removeStudentId" placeholder="Student ID">
             <button onclick="submitRemoveStudent()">Remove Student</button>
         </div>
     </div>
-
     <script>
-        // Simulated "database"
+        // Populating valid dates:
+        const validDates = <?php echo json_encode($dates); ?>;
+        const dateSelect = document.getElementById("dateSelect");
+        validDates.forEach(date => {
+            const option = document.createElement("option");
+            option.value = date;
+            option.textContent = date;
+            dateSelect.appendChild(option);
+        });
+
+        dateSelect.addEventListener("change", () => {
+        const selectedDate = dateSelect.value;
+        const filtered = students.filter(s => s.AttendanceDate === selectedDate);
+        renderList(filtered);
+        });
+
+        //Populating students and icons
         const students = <?php echo json_encode($students); ?>;
         const icons = {
             "Present": "../Images/presentIcon.png",
-            "Tardy": "../Images/tardyIcon.png",
+            "Late": "../Images/tardyIcon.png",
             "Absent": "../Images/absentIcon.png",
-            "Excused": "../Images/excusedIcon.png"
         };
 
         const studentList = document.getElementById("studentList");
 
-    function renderList() {
-        studentList.innerHTML = '';
-        students.forEach((student, index) => {
+        function renderList(filteredStudents) {
+            studentList.innerHTML = '';
+            filteredStudents.forEach((student, index) => {
             const entry = document.createElement("div");
             entry.className = "student-entry";
 
@@ -349,9 +357,13 @@
             name.className = "student-name";
             name.textContent = student.StudentName;
 
+            const id = document.createElement("div");
+            id.className = "student-id";
+            id.textContent = student.StudentID;
+
             const statusContainer = document.createElement("div");
 
-            const statuses = ["Present", "Tardy", "Absent", "Excused"];
+            const statuses = ["Present", "Late", "Absent"];
 
             statuses.forEach(status => {
                 const statusSpan = document.createElement("span");
@@ -372,35 +384,54 @@
                 statusSpan.appendChild(iconDiv);
                 statusSpan.appendChild(labelDiv);
 
-                if (student.Status === status) {
+                if (student.Status === status){
                 statusSpan.classList.add(status.toLowerCase());
-              } else {
+                }else{
                 statusSpan.classList.add("inactive");
-              }
+                }
     
               statusSpan.addEventListener('click', () => {
-                students[index].status = status;
-                renderList();
-              });
+                const studentId = student.StudentID;
+                const date = student.AttendanceDate;
+
+                fetch("updateStatus.php",{
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: `studentId=${encodeURIComponent(studentId)}&status=${encodeURIComponent(status)}&date=${encodeURIComponent(date)}`
+                })
+                .then(response => response.text())
+                .then(result => {
+                    console.log("Result is:", result.trim());
+                    if(result.trim() === "success"){
+                        students[index].status = status;
+                        renderList(filteredStudents); // Re-render with current filtered list
+                    }else{
+                        console.log("Sending status:", status);
+                        alert("Failed to update attendance.");
+                    }
+                })
+                .catch(error =>{
+                    console.error("Error updating status:", error);
+                });
+            });
 
                 statusContainer.appendChild(statusSpan);
             });
 
             entry.appendChild(name);
+            entry.appendChild(id);
             entry.appendChild(statusContainer);
             studentList.appendChild(entry);
         });
     }
-
+/* 
     function addStudentPopup() {
+
+    }
         document.getElementById("addModal").style.display = "flex";
-    }
-
-    function removeStudentPopup() {
-        document.getElementById("removeModal").style.display = "flex";
-    }
-
-    function submitAddStudent() {
+        function submitAddStudent() {
         const firstName = document.getElementById("addFirstName").value.trim();
         const lastName = document.getElementById("addLastName").value.trim();
         const id = document.getElementById("addStudentId").value.trim();
@@ -410,17 +441,43 @@
             document.getElementById("addModal").style.display = "none";
         }
     }
+*/
+    function removeStudentPopup() {
+        document.getElementById("removeModal").style.display = "flex";
+    }
 
     function submitRemoveStudent() {
         const id = document.getElementById("removeStudentId").value.trim();
-        const index = students.findIndex(s => s.id === id);
-        if (index !== -1) {
-            students.splice(index, 1);
-            renderList();
-            document.getElementById("removeModal").style.display = "none";
-        } else {
-            alert("Student not found.");
+
+        if(!id){
+            alert("Please fill all fields");
+            return;
         }
+
+        fetch("removeStudent.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: `studentId=${encodeURIComponent(id)}`
+        })
+        .then(response => response.text())
+        .then(result => {
+            if (result === "success"){
+                // Remove from JS array and re-render
+                const index = students.findIndex(s => s.StudentID === id);
+                if (index !== -1) {
+                    students.splice(index, 1);
+                    const selectedDate = dateSelect.value;
+                    const filtered = students.filter(s => s.AttendanceDate === selectedDate);
+                    renderList(filtered);
+                }
+                alert("Student removed successfully.");
+                document.getElementById("removeModal").style.display = "none";
+            } else if(result==="error"){
+                alert("Failed to remove student.");
+            }
+        })
     }
 
     window.onclick = function(event) {
@@ -428,8 +485,7 @@
             event.target.style.display = "none";
         }
     }
-
-    renderList();
+    renderList(students);
   </script>
 </body>
 </html>
