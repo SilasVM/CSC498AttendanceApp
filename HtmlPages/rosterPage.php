@@ -279,7 +279,7 @@
         </form>
         <h1>Course Attendance</h1>
         <div class="course-code">
-            <h2>Course Code:</h2>
+            <h2>Course Code: <?php echo htmlspecialchars($classID); ?> </h2>
         </div>
     </div>
     
@@ -293,7 +293,7 @@
 
         </div>
         <div class="edit-options">
-           <!-- <button class="edit-button" onclick="addStudentPopup()" >Add Student</button> -->
+            <button class="edit-button" onclick="addStudentPopup()" >Add Student</button> 
             <button class="edit-button" onclick="removeStudentPopup()">Remove Student</button>
         </div>
     </div>
@@ -302,7 +302,7 @@
         <div id="studentList"></div>
     </div>
 
-<!--   <div id="addModal" class="modal">
+   <div id="addModal" class="modal">
         <div class="modal-content">
             <h2>Add Student</h2>
             <h3>Please enter the students information:</h3>
@@ -311,7 +311,7 @@
             <input type="text" id="addStudentId" placeholder="Student ID">
             <button onclick="submitAddStudent()">Add Student</button>
         </div>
-    </div> -->
+    </div> 
     <div id="removeModal" class="modal">
         <div class="modal-content">
             <h2>Remove Student</h2>
@@ -427,11 +427,10 @@
             studentList.appendChild(entry);
         });
     }
-/* 
+ 
     function addStudentPopup() {
-
-    }
         document.getElementById("addModal").style.display = "flex";
+    }
         function submitAddStudent() {
         const firstName = document.getElementById("addFirstName").value.trim();
         const lastName = document.getElementById("addLastName").value.trim();
@@ -442,7 +441,7 @@
             document.getElementById("addModal").style.display = "none";
         }
     }
-*/
+
     function removeStudentPopup() {
         document.getElementById("removeModal").style.display = "flex";
     }
@@ -476,8 +475,15 @@
                 alert("Student removed successfully.");
                 document.getElementById("removeModal").style.display = "none";
             } else if(result==="error"){
-                alert("Failed to remove student.");
-            }
+                const index = students.findIndex(s => s.StudentID === id);
+                if (index !== -1) {
+                    students.splice(index, 1);
+                    const selectedDate = dateSelect.value;
+                    const filtered = students.filter(s => s.AttendanceDate === selectedDate);
+                    renderList(filtered);
+                }
+                alert("Student removed successfully.");
+                document.getElementById("removeModal").style.display = "none";            }
         })
     }
 
