@@ -72,8 +72,8 @@ if($_SERVER['REQUEST_METHOD']=="POST" && isset($_POST['studentID']) && isset($_P
 
         if($checkInTimestamp <= $graceEndTime && $checkInTimestamp >= $classStart){
             $Status = "Present";
-        }else if($checkInTimestamp > $graceEndTime && $checkInTimestamp <= $classEndTime){
-            $Status = "Tardy";
+        }else if($checkInTimestamp >= $graceEndTime && $checkInTimestamp <= $classEndTime){
+            $Status = "Late";
         }else{
             $Status = "Absent";
         }
