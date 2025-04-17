@@ -70,7 +70,7 @@ if($_SERVER['REQUEST_METHOD']=="POST" && isset($_POST['studentID']) && isset($_P
         $classEndTime = strtotime($classEnd);
         $graceEndTime = strtotime("+$gracePeriod minutes", $classStartTime);
 
-        if($checkInTimestamp <= $graceEndTime && $checkInTimestamp >= $classStart){
+        if($checkInTimestamp <= $graceEndTime && $checkInTimestamp >= $classStartTime){
             $Status = "Present";
         }else if($checkInTimestamp >= $graceEndTime && $checkInTimestamp <= $classEndTime){
             $Status = "Late";
