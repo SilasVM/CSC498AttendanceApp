@@ -214,24 +214,5 @@ if($_SERVER['REQUEST_METHOD']=="POST" && isset($_POST['studentID']) && isset($_P
         </div>
         <img src="/Images/studentImage.jpg" alt="Student Image">  
     </div>
-    <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const form = document.querySelector("form");
-        const classInput = document.querySelector("input[name='classID']");
-
-        form.addEventListener("submit", function (e) {
-            const classID = classInput.value.trim();
-            const today = new Date().toISOString().split("T")[0];
-            const storageKey = `attendance_${classID}_${today}`;
-
-            if (localStorage.getItem(storageKey)) {
-                e.preventDefault();
-                alert("You've already submitted attendance for this class today.");
-            } else {
-                localStorage.setItem(storageKey, true);
-            }
-        });
-    });
-</script>
 </body>
 </html>
