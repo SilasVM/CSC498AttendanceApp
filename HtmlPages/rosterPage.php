@@ -295,6 +295,8 @@
         <div class="edit-options">
             <button class="edit-button" onclick="addStudentPopup()" >Add Student</button> 
             <button class="edit-button" onclick="removeStudentPopup()">Remove Student</button>
+            <button class="edit-button">Print Roster</button>
+            <button class="edit-button">Import Students</button>
         </div>
     </div>
 
