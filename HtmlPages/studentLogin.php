@@ -221,7 +221,6 @@ if($_SERVER['REQUEST_METHOD']=="POST" && isset($_POST['studentID']) && isset($_P
 
         form.addEventListener("submit", function (e) {
             const classID = classInput.value.trim();
-
             const today = new Date().toISOString().split("T")[0];
             const storageKey = `attendance_${classID}_${today}`;
 
