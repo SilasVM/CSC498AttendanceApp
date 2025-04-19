@@ -217,7 +217,7 @@ if($_SERVER['REQUEST_METHOD']=="POST" && isset($_POST['studentID']) && isset($_P
     <script>
     document.addEventListener("DOMContentLoaded", function () {
         const form = document.querySelector("form");
-        const studentInput = document.querySelector("input[name='studentID']");
+        //const studentInput = document.querySelector("input[name='studentID']");
         const classInput = document.querySelector("input[name='classID']");
 
         form.addEventListener("submit", function (e) {
@@ -225,7 +225,7 @@ if($_SERVER['REQUEST_METHOD']=="POST" && isset($_POST['studentID']) && isset($_P
             const classID = classInput.value.trim();
 
             const today = new Date().toISOString().split("T")[0];
-            const storageKey = `attendance_${studentID}_${classID}_${today}`;
+            const storageKey = `attendance_${classID}_${today}`;
 
             if (localStorage.getItem(storageKey)) {
                 e.preventDefault();
